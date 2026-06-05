@@ -1,0 +1,15 @@
+# Known-bad indicators for offline enrichment
+185.220.101.45
+45.33.32.156
+103.224.182.251
+198.51.100.77
+evil-c2.malware.test
+phish-login.bad
+coinminer-pool.evil
+ransomware-gate.dark
+# Malware file hashes
+deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+0102030405060708090a0b0c0d0e0f10
+# Compromised accounts
+evil_admin
+compromised_svc

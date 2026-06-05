@@ -1,0 +1,72 @@
+{
+  "185.220.101.45": {
+    "abuseConfidenceScore": 100,
+    "countryCode": "DE",
+    "usageType": "Data Center/Web Hosting/Transit",
+    "totalReports": 847,
+    "isp": "Tor Network"
+  },
+  "45.33.32.156": {
+    "abuseConfidenceScore": 95,
+    "countryCode": "US",
+    "usageType": "Data Center/Web Hosting/Transit",
+    "totalReports": 312,
+    "isp": "Choopa"
+  },
+  "103.224.182.251": {
+    "abuseConfidenceScore": 100,
+    "countryCode": "IN",
+    "usageType": "Fixed Line ISP",
+    "totalReports": 156,
+    "isp": "Hostinger"
+  },
+  "198.51.100.77": {
+    "abuseConfidenceScore": 88,
+    "countryCode": "US",
+    "usageType": "Data Center/Web Hosting/Transit",
+    "totalReports": 421,
+    "isp": "Example ISP"
+  },
+  "203.0.113.44": {
+    "abuseConfidenceScore": 52,
+    "countryCode": "AU",
+    "usageType": "Fixed Line ISP",
+    "totalReports": 18,
+    "isp": "Example Telecom"
+  },
+  "198.96.100.50": {
+    "abuseConfidenceScore": 61,
+    "countryCode": "NL",
+    "usageType": "Content Delivery Network",
+    "totalReports": 9,
+    "isp": "CDN Provider"
+  },
+  "81.2.69.142": {
+    "abuseConfidenceScore": 12,
+    "countryCode": "GB",
+    "usageType": "Fixed Line ISP",
+    "totalReports": 2,
+    "isp": "BT"
+  },
+  "192.0.2.88": {
+    "abuseConfidenceScore": 28,
+    "countryCode": "US",
+    "usageType": "Fixed Line ISP",
+    "totalReports": 5,
+    "isp": "Example Cable"
+  },
+  "203.0.113.99": {
+    "abuseConfidenceScore": 78,
+    "countryCode": "US",
+    "usageType": "Data Center/Web Hosting/Transit",
+    "totalReports": 44,
+    "isp": "Cloud Host"
+  },
+  "203.0.113.200": {
+    "abuseConfidenceScore": 85,
+    "countryCode": "RU",
+    "usageType": "Data Center/Web Hosting/Transit",
+    "totalReports": 67,
+    "isp": "Bulletproof Host"
+  }
+}

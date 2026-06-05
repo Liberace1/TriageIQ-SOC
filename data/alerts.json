@@ -1,0 +1,451 @@
+[
+  {
+    "id": "ALT-001",
+    "timestamp": "2024-06-01T08:00:00Z",
+    "rule_name": "Outbound C2 Connection",
+    "severity": "high",
+    "source_ip": "10.0.5.22",
+    "destination_ip": "185.220.101.45",
+    "message": "Workstation 10.0.5.22 connected to known C2 IP 185.220.101.45 on port 443"
+  },
+  {
+    "id": "ALT-002",
+    "timestamp": "2024-06-01T08:01:00Z",
+    "rule_name": "Suspicious DNS Query",
+    "severity": "critical",
+    "source_ip": "192.168.10.50",
+    "domain": "evil-c2.malware.test",
+    "message": "DNS query to evil-c2.malware.test from finance workstation"
+  },
+  {
+    "id": "ALT-003",
+    "timestamp": "2024-06-01T08:02:00Z",
+    "rule_name": "Phishing Domain Access",
+    "severity": "high",
+    "source_ip": "172.16.3.88",
+    "domain": "phish-login.bad",
+    "url": "https://phish-login.bad/login",
+    "message": "User visited credential-harvesting domain phish-login.bad"
+  },
+  {
+    "id": "ALT-004",
+    "timestamp": "2024-06-01T08:03:00Z",
+    "rule_name": "Coinminer Pool Communication",
+    "severity": "medium",
+    "source_ip": "10.0.8.41",
+    "destination_ip": "45.33.32.156",
+    "domain": "coinminer-pool.evil",
+    "message": "Repeated TLS connections to 45.33.32.156 and coinminer-pool.evil"
+  },
+  {
+    "id": "ALT-005",
+    "timestamp": "2024-06-01T08:04:00Z",
+    "rule_name": "Ransomware Beacon",
+    "severity": "critical",
+    "source_ip": "10.0.12.77",
+    "destination_ip": "103.224.182.251",
+    "domain": "ransomware-gate.dark",
+    "message": "Periodic beacon to ransomware-gate.dark via 103.224.182.251 every 60s"
+  },
+  {
+    "id": "ALT-006",
+    "timestamp": "2024-06-01T08:05:00Z",
+    "rule_name": "Tor Exit Node Traffic",
+    "severity": "high",
+    "source_ip": "10.0.15.33",
+    "destination_ip": "198.51.100.77",
+    "message": "Outbound connection to Tor exit node 198.51.100.77"
+  },
+  {
+    "id": "ALT-007",
+    "timestamp": "2024-06-01T08:06:00Z",
+    "rule_name": "Dual IOC Match",
+    "severity": "critical",
+    "source_ip": "10.0.5.99",
+    "destination_ip": "185.220.101.45",
+    "domain": "evil-c2.malware.test",
+    "message": "Same session hit both 185.220.101.45 and evil-c2.malware.test"
+  },
+  {
+    "id": "ALT-008",
+    "timestamp": "2024-06-01T08:07:00Z",
+    "rule_name": "Malware Download Attempt",
+    "severity": "high",
+    "source_ip": "10.0.9.12",
+    "url": "http://103.224.182.251/payload.bin",
+    "message": "HTTP GET to 103.224.182.251 for suspicious binary"
+  },
+  {
+    "id": "ALT-009",
+    "timestamp": "2024-06-01T08:08:00Z",
+    "rule_name": "Credential Phish Click",
+    "severity": "medium",
+    "source_ip": "10.0.11.44",
+    "domain": "phish-login.bad",
+    "message": "Email link click led to phish-login.bad"
+  },
+  {
+    "id": "ALT-010",
+    "timestamp": "2024-06-01T08:09:00Z",
+    "rule_name": "Crypto Mining DNS",
+    "severity": "medium",
+    "source_ip": "10.0.14.21",
+    "domain": "coinminer-pool.evil",
+    "message": "DNS lookup for coinminer-pool.evil"
+  },
+  {
+    "id": "ALT-011",
+    "timestamp": "2024-06-01T08:10:00Z",
+    "rule_name": "Internal SMB Scan",
+    "severity": "low",
+    "source_ip": "10.0.0.5",
+    "destination_ip": "10.0.0.6",
+    "message": "Internal host scanned adjacent subnet host on port 445"
+  },
+  {
+    "id": "ALT-012",
+    "timestamp": "2024-06-01T08:11:00Z",
+    "rule_name": "DNS to Trusted Provider",
+    "severity": "info",
+    "source_ip": "10.0.12.100",
+    "domain": "google.com",
+    "message": "Routine DNS query to google.com"
+  },
+  {
+    "id": "ALT-013",
+    "timestamp": "2024-06-01T08:12:00Z",
+    "rule_name": "Office 365 Login",
+    "severity": "low",
+    "source_ip": "10.0.12.101",
+    "domain": "login.microsoft.com",
+    "message": "Successful user authentication to login.microsoft.com"
+  },
+  {
+    "id": "ALT-014",
+    "timestamp": "2024-06-01T08:13:00Z",
+    "rule_name": "AWS Console Access",
+    "severity": "low",
+    "source_ip": "10.0.20.55",
+    "domain": "console.aws.amazon.com",
+    "message": "Admin accessed AWS console from corporate network"
+  },
+  {
+    "id": "ALT-015",
+    "timestamp": "2024-06-01T08:14:00Z",
+    "rule_name": "GitHub Clone Activity",
+    "severity": "info",
+    "source_ip": "10.0.21.10",
+    "domain": "github.com",
+    "message": "Developer cloned repository from github.com"
+  },
+  {
+    "id": "ALT-016",
+    "timestamp": "2024-06-01T08:15:00Z",
+    "rule_name": "Policy Violation - Streaming",
+    "severity": "low",
+    "source_ip": "10.0.22.88",
+    "domain": "cdn.netflix.com",
+    "message": "Streaming traffic to cdn.netflix.com during work hours"
+  },
+  {
+    "id": "ALT-017",
+    "timestamp": "2024-06-01T08:16:00Z",
+    "rule_name": "Internal DHCP Renewal",
+    "severity": "info",
+    "source_ip": "10.0.1.50",
+    "destination_ip": "10.0.1.1",
+    "message": "Normal DHCP renewal from internal DHCP server"
+  },
+  {
+    "id": "ALT-018",
+    "timestamp": "2024-06-01T08:17:00Z",
+    "rule_name": "VPN Client Connected",
+    "severity": "low",
+    "source_ip": "10.0.30.12",
+    "domain": "vpn.corp.local",
+    "message": "Remote employee connected via corporate VPN"
+  },
+  {
+    "id": "ALT-019",
+    "timestamp": "2024-06-01T08:18:00Z",
+    "rule_name": "Failed Login Threshold",
+    "severity": "medium",
+    "source_ip": "203.0.113.44",
+    "message": "12 failed logins from external IP 203.0.113.44 in 5 minutes"
+  },
+  {
+    "id": "ALT-020",
+    "timestamp": "2024-06-01T08:19:00Z",
+    "rule_name": "New External Domain",
+    "severity": "medium",
+    "source_ip": "10.0.31.77",
+    "domain": "unknown-vendor.io",
+    "message": "First-seen domain unknown-vendor.io contacted by marketing workstation"
+  },
+  {
+    "id": "ALT-021",
+    "timestamp": "2024-06-01T08:20:00Z",
+    "rule_name": "Large Outbound Transfer",
+    "severity": "high",
+    "source_ip": "10.0.32.14",
+    "destination_ip": "198.96.100.50",
+    "message": "850 MB upload to external IP 198.96.100.50 (not on blocklist)"
+  },
+  {
+    "id": "ALT-022",
+    "timestamp": "2024-06-01T08:21:00Z",
+    "rule_name": "Suspicious PowerShell",
+    "severity": "high",
+    "source_ip": "10.0.8.55",
+    "hostname": "WS-FIN-055",
+    "message": "Encoded PowerShell execution on WS-FIN-055 with no external IOC"
+  },
+  {
+    "id": "ALT-023",
+    "timestamp": "2024-06-01T08:22:00Z",
+    "rule_name": "Port Scan Detected",
+    "severity": "medium",
+    "source_ip": "198.18.0.44",
+    "destination_ip": "10.0.40.1",
+    "message": "External host 198.18.0.44 scanned 200 ports on perimeter firewall"
+  },
+  {
+    "id": "ALT-024",
+    "timestamp": "2024-06-01T08:23:00Z",
+    "rule_name": "Impossible Travel Login",
+    "severity": "high",
+    "source_ip": "81.2.69.142",
+    "message": "User logged in from 81.2.69.142 20 minutes after login from US IP"
+  },
+  {
+    "id": "ALT-025",
+    "timestamp": "2024-06-01T08:24:00Z",
+    "rule_name": "Rare Process Execution",
+    "severity": "medium",
+    "source_ip": "10.0.45.90",
+    "message": "Rare process mshta.exe spawned by outlook.exe on 10.0.45.90"
+  },
+  {
+    "id": "ALT-026",
+    "timestamp": "2024-06-01T08:25:00Z",
+    "rule_name": "Brute Force SSH",
+    "severity": "high",
+    "source_ip": "192.0.2.88",
+    "destination_ip": "10.0.50.10",
+    "message": "500 SSH auth failures from 192.0.2.88 against jump host"
+  },
+  {
+    "id": "ALT-027",
+    "timestamp": "2024-06-01T08:26:00Z",
+    "rule_name": "Data Exfiltration Pattern",
+    "severity": "critical",
+    "source_ip": "10.0.60.22",
+    "destination_ip": "203.0.113.99",
+    "message": "Unusual volume of DNS TXT queries to 203.0.113.99 suggesting tunneling"
+  },
+  {
+    "id": "ALT-028",
+    "timestamp": "2024-06-01T08:27:00Z",
+    "rule_name": "Admin Tool Usage",
+    "severity": "low",
+    "source_ip": "10.0.70.5",
+    "message": "PsExec used by IT admin on 10.0.70.5 for scheduled maintenance"
+  },
+  {
+    "id": "ALT-029",
+    "timestamp": "2024-06-01T08:28:00Z",
+    "rule_name": "SSL Certificate Mismatch",
+    "severity": "medium",
+    "source_ip": "10.0.71.18",
+    "domain": "updates.thirdpartycdn.net",
+    "message": "TLS cert CN mismatch on updates.thirdpartycdn.net"
+  },
+  {
+    "id": "ALT-030",
+    "timestamp": "2024-06-01T08:29:00Z",
+    "rule_name": "Repeated C2 Callback",
+    "severity": "critical",
+    "source_ip": "10.0.72.33",
+    "destination_ip": "185.220.101.45",
+    "message": "Host 10.0.72.33 callback to 185.220.101.45 every 30 seconds for 2 hours"
+  },
+  {
+    "id": "ALT-031",
+    "timestamp": "2024-06-01T08:30:00Z",
+    "rule_name": "Email Attachment Detonation",
+    "severity": "high",
+    "source_ip": "10.0.73.44",
+    "domain": "ransomware-gate.dark",
+    "message": "Sandbox detonation: attachment contacted ransomware-gate.dark"
+  },
+  {
+    "id": "ALT-032",
+    "timestamp": "2024-06-01T08:31:00Z",
+    "rule_name": "Proxy Bypass Attempt",
+    "severity": "medium",
+    "source_ip": "10.0.74.55",
+    "destination_ip": "45.33.32.156",
+    "message": "Direct outbound connection bypassing proxy to 45.33.32.156"
+  },
+  {
+    "id": "ALT-033",
+    "timestamp": "2024-06-01T08:32:00Z",
+    "rule_name": "Windows Update Check",
+    "severity": "info",
+    "source_ip": "10.0.75.66",
+    "domain": "update.microsoft.com",
+    "message": "Routine Windows Update check to update.microsoft.com"
+  },
+  {
+    "id": "ALT-034",
+    "timestamp": "2024-06-01T08:33:00Z",
+    "rule_name": "Slack Webhook Post",
+    "severity": "low",
+    "source_ip": "10.0.76.77",
+    "domain": "hooks.slack.com",
+    "message": "CI pipeline posted build status to hooks.slack.com"
+  },
+  {
+    "id": "ALT-035",
+    "timestamp": "2024-06-01T08:34:00Z",
+    "rule_name": "LDAP Bind Failure",
+    "severity": "medium",
+    "source_ip": "10.0.77.88",
+    "destination_ip": "10.0.1.10",
+    "message": "Repeated LDAP bind failures from 10.0.77.88 to domain controller"
+  },
+  {
+    "id": "ALT-036",
+    "timestamp": "2024-06-01T08:35:00Z",
+    "rule_name": "Firewall Deny Spike",
+    "severity": "low",
+    "source_ip": "203.0.113.200",
+    "message": "Firewall blocked 40 inbound packets from 203.0.113.200"
+  },
+  {
+    "id": "ALT-037",
+    "timestamp": "2024-06-01T08:36:00Z",
+    "rule_name": "Suspicious User Agent",
+    "severity": "medium",
+    "source_ip": "10.0.78.99",
+    "domain": "api.cloudflare.com",
+    "message": "HTTP request with curl user-agent to api.cloudflare.com from desktop"
+  },
+  {
+    "id": "ALT-038",
+    "timestamp": "2024-06-01T08:37:00Z",
+    "rule_name": "Multi-Stage Phish Chain",
+    "severity": "critical",
+    "source_ip": "10.0.79.10",
+    "domain": "phish-login.bad",
+    "destination_ip": "103.224.182.251",
+    "message": "User chain: phish-login.bad then redirect to 103.224.182.251"
+  },
+  {
+    "id": "ALT-039",
+    "timestamp": "2024-06-01T08:38:00Z",
+    "rule_name": "Printer Firmware Update",
+    "severity": "info",
+    "source_ip": "10.0.80.11",
+    "domain": "support.hp.com",
+    "message": "Office printer checked support.hp.com for firmware"
+  },
+  {
+    "id": "ALT-040",
+    "timestamp": "2024-06-01T08:39:00Z",
+    "rule_name": "After-Hours Login",
+    "severity": "medium",
+    "source_ip": "10.0.81.12",
+    "message": "Interactive login on 10.0.81.12 at 03:15 local time"
+  },
+  {
+    "id": "ALT-041",
+    "timestamp": "2024-06-01T08:40:00Z",
+    "rule_name": "Known Malware Hash Detected",
+    "severity": "critical",
+    "source_ip": "10.0.82.20",
+    "sha256": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+    "message": "Endpoint quarantined file matching known malware SHA256"
+  },
+  {
+    "id": "ALT-042",
+    "timestamp": "2024-06-01T08:41:00Z",
+    "rule_name": "Compromised Account Activity",
+    "severity": "high",
+    "source_ip": "10.0.83.30",
+    "username": "CORP\\evil_admin",
+    "message": "Suspicious actions by compromised account CORP\\evil_admin"
+  },
+  {
+    "id": "ALT-043",
+    "timestamp": "2024-06-01T08:42:00Z",
+    "rule_name": "Benign File Hash",
+    "severity": "low",
+    "source_ip": "10.0.84.40",
+    "md5": "d41d8cd98f00b204e9800998ecf8427e",
+    "message": "Known empty-file hash d41d8cd98f00b204e9800998ecf8427e on approved installer"
+  },
+  {
+    "id": "ALT-044",
+    "timestamp": "2024-06-01T08:43:00Z",
+    "rule_name": "Service Account Login",
+    "severity": "medium",
+    "source_ip": "10.0.85.50",
+    "user": "svc_backup",
+    "message": "Scheduled backup job ran under svc_backup"
+  },
+  {
+    "id": "ALT-045",
+    "timestamp": "2024-06-01T08:00:30Z",
+    "rule_name": "Outbound C2 Connection",
+    "severity": "high",
+    "source_ip": "10.0.5.23",
+    "destination_ip": "185.220.101.45",
+    "message": "Repeat C2 connection to 185.220.101.45"
+  },
+  {
+    "id": "ALT-046",
+    "timestamp": "2024-06-01T08:01:00Z",
+    "rule_name": "Outbound C2 Connection",
+    "severity": "high",
+    "source_ip": "10.0.5.24",
+    "destination_ip": "185.220.101.45",
+    "message": "Repeat C2 connection to 185.220.101.45"
+  },
+  {
+    "id": "ALT-047",
+    "timestamp": "2024-06-01T08:02:00Z",
+    "rule_name": "Outbound C2 Connection",
+    "severity": "high",
+    "source_ip": "10.0.5.25",
+    "destination_ip": "185.220.101.45",
+    "message": "Repeat C2 connection to 185.220.101.45"
+  },
+  {
+    "id": "ALT-048",
+    "timestamp": "2024-06-03T08:00:00Z",
+    "rule_name": "Outbound C2 Connection",
+    "severity": "high",
+    "source_ip": "10.0.5.26",
+    "destination_ip": "185.220.101.45",
+    "message": "C2 connection to 185.220.101.45 two days later"
+  },
+  {
+    "id": "ALT-049",
+    "timestamp": "2024-06-01T08:11:30Z",
+    "rule_name": "DNS to Trusted Provider",
+    "severity": "info",
+    "source_ip": "10.0.12.102",
+    "domain": "google.com",
+    "message": "Routine DNS query to google.com"
+  },
+  {
+    "id": "ALT-050",
+    "timestamp": "2024-06-01T08:11:45Z",
+    "rule_name": "DNS to Trusted Provider",
+    "severity": "info",
+    "source_ip": "10.0.12.103",
+    "domain": "google.com",
+    "message": "Routine DNS query to google.com"
+  }
+]
