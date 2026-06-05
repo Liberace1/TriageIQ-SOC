@@ -12,6 +12,7 @@ from triageiq.enrich import Enricher, default_enrichers, enrich_indicators
 from triageiq.models import Alert, AttackMapping, Case, Indicator, ScoredAlert
 
 FIXTURES_DIR = Path(__file__).resolve().parent.parent / "data"
+DEFAULT_ALERTS_PATH = FIXTURES_DIR / "alerts.json"
 DEFAULT_DEDUP_WINDOW_MINUTES = 60
 DEFAULT_ATTACK_MAP_PATH = FIXTURES_DIR / "attack_map.json"
 
@@ -30,7 +31,13 @@ CLEAN_HIT_WEIGHT = -1.0
 # --- ingest ---
 
 def ingest_alerts(path: str | Path) -> list[Alert]:
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    alert_path = Path(path)
+    if not alert_path.is_file():
+        raise FileNotFoundError(
+            f"Alert file not found: {alert_path}\n"
+            f"Try: python -m triageiq {DEFAULT_ALERTS_PATH}"
+        )
+    data = json.loads(alert_path.read_text(encoding="utf-8"))
     if not isinstance(data, list):
         raise ValueError("Alert file must contain a JSON array")
     alerts: list[Alert] = []

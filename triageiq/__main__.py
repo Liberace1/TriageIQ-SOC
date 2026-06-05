@@ -5,13 +5,19 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from triageiq.engine import DEFAULT_DEDUP_WINDOW_MINUTES, ingest_alerts, run_pipeline
+from triageiq.engine import DEFAULT_ALERTS_PATH, DEFAULT_DEDUP_WINDOW_MINUTES, ingest_alerts, run_pipeline
 from triageiq.output import print_worklist_table, write_worklist_json
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="TriageIQ - SOC alert enrichment and triage engine")
-    parser.add_argument("alerts", type=Path, help="Path to alerts JSON file")
+    parser.add_argument(
+        "alerts",
+        type=Path,
+        nargs="?",
+        default=DEFAULT_ALERTS_PATH,
+        help=f"Path to alerts JSON file (default: {DEFAULT_ALERTS_PATH})",
+    )
     parser.add_argument("--out", type=Path, default=Path("worklist.json"), help="Output worklist JSON")
     parser.add_argument("--known-bad", type=Path, default=None, help="Known-bad list path")
     parser.add_argument("--attack-map", type=Path, default=None, help="ATT&CK keyword map JSON")

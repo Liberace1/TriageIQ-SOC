@@ -21,7 +21,7 @@ TriageIQ automates that prep work on an exported alert batch and hands back a sh
 ## Pipeline
 
 ```
-data/alerts.json -> ingest -> extract -> enrich -> ATT&CK -> score -> dedup -> worklist
+alerts.json -> ingest -> extract -> enrich -> ATT&CK -> score -> dedup -> worklist
 ```
 
 | Stage | What it does |
@@ -32,18 +32,35 @@ data/alerts.json -> ingest -> extract -> enrich -> ATT&CK -> score -> dedup -> w
 | Score | Severity + reputation, with reason string |
 | Dedup | Same rule + indicator + 60-min window |
 
+## Alert JSON schema
+
+TriageIQ ingest expects a **JSON array** of flat objects:
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `id` | yes | Unique alert ID (`alert_id` also accepted) |
+| `timestamp` | no | ISO-8601 string (`time` also accepted) |
+| `rule_name` | no | Alert rule or title (`rule` also accepted) |
+| `severity` | no | `low`, `medium`, `high`, `critical` (default: `medium`) |
+| `message` | no | Human-readable detail (`description` also accepted) |
+| `source_ip`, `destination_ip` | no | IPv4 addresses |
+| `domain`, `url` | no | Host or URL indicators |
+| `sha256`, `md5` | no | File hashes |
+| `username` | no | Account name (`user` also accepted) |
+
+Use **`triageiq-convert`** to transform Wazuh or other nested exports into this schema.
+
 ## Repository Structure
 
 ```
-Security-tool/
-├── triageiq/              # source code
+TriageIQ-SOC/
+├── triageiq/              # source (engine, enrich, convert, output)
 ├── data/
-│   ├── alerts.json        # sample alerts (50)
-│   ├── known_bad.txt      # offline blocklist
+│   ├── alerts.json        # synthetic sample (50)
+│   ├── wazuh_alerts.json  # converted Wazuh sample (738)
+│   ├── known_bad.txt
 │   ├── abuseipdb_cache.json
 │   └── attack_map.json
-├── docs/
-│   └── AI_USAGE.md
 ├── README.md
 ├── requirements.txt
 └── pyproject.toml
@@ -51,22 +68,86 @@ Security-tool/
 
 ## Requirements
 
-- Python 3.11+
-- `rich` (installed via requirements)
+- **Python 3.11+** ([python.org](https://www.python.org/downloads/))
+- **pip** (bundled with Python; verify with `python -m pip --version`)
 
 ## Setup
 
+Clone the repo, create a virtual environment, then install TriageIQ:
+
 ```bash
-cd Security-tool
-pip install -e .
+git clone https://github.com/Liberace1/TriageIQ-SOC.git
+cd TriageIQ-SOC
+python -m venv .venv
+```
+
+Activate the virtual environment:
+
+```bash
+# Windows
+.venv\Scripts\activate
+
+# Linux / macOS
+source .venv/bin/activate
+```
+
+Install the package:
+
+```bash
+python -m pip install -e .
+```
+
+For online Wazuh download support:
+
+```bash
+python -m pip install -e ".[convert]"
+```
+
+## Converting alerts
+
+**Local alert file** (auto-detects Wazuh vs flat TriageIQ format):
+
+```bash
+triageiq-convert --input path/to/alerts.json --out data/converted.json
+```
+
+**Explicit format:**
+
+```bash
+triageiq-convert -i wazuh_export.json -o data/converted.json --format wazuh
+triageiq-convert -i flat_alerts.json -o data/converted.json --format triageiq
+```
+
+**Download Wazuh sample** from [kholil-lil/wazuh-alerts](https://huggingface.co/datasets/kholil-lil/wazuh-alerts):
+
+```bash
+triageiq-convert --download --out data/wazuh_alerts.json
+```
+
+| Flag | Default | Purpose |
+|------|---------|---------|
+| `--input`, `-i` | required* | Source alert JSON |
+| `--out`, `-o` | `data/wazuh_alerts.json` | Output file |
+| `--format`, `-f` | `auto` | `auto`, `wazuh`, or `triageiq` |
+| `--download` | off | Fetch Wazuh sample from Hugging Face |
+| `--limit` | all | Limit rows when using `--download` |
+
+\* `--input` or `--download` is required.
+
+Then run triage:
+
+```bash
+python -m triageiq data/converted.json --out worklist.json
 ```
 
 ## Usage
 
-**Offline demo (recommended):**
+**Offline demo:**
 
 ```bash
+python -m triageiq
 python -m triageiq data/alerts.json --out worklist.json
+python -m triageiq data/wazuh_alerts.json --out worklist.json
 ```
 
 **Optional flags:**
@@ -84,13 +165,19 @@ python -m triageiq data/alerts.json --live    # needs ABUSEIPDB_API_KEY
 
 ## Expected Results
 
-Running against `data/alerts.json`:
+Synthetic sample (`data/alerts.json`):
 
 ```
 50 alert(s) -> 45 case(s)
 ```
 
-Top of the worklist should include high-score malicious cases (e.g. **ALT-005** Ransomware Beacon at **18.0**, ATT&CK **T1486**). Benign traffic (Google DNS, Office 365, internal scans) should sit at the bottom near **0.0**.
+Wazuh sample (`data/wazuh_alerts.json`):
+
+```
+738 alert(s) -> 95 case(s)
+```
+
+Top synthetic cases include high-score malicious alerts (e.g. **ALT-005** Ransomware Beacon at **18.0**, ATT&CK **T1486**). Benign traffic sits near **0.0**.
 
 Output: ranked console table + `worklist.json` with scores, enrichments, ATT&CK data, and dedup counts.
 
@@ -98,17 +185,9 @@ Output: ranked console table + `worklist.json` with scores, enrichments, ATT&CK 
 
 - Reads exported JSON alerts only; no live SIEM/SOAR integration
 - ATT&CK mapping and scoring are rule-based/heuristic
-- Sample alerts and enrichment data are synthetic
+- Offline enrichment coverage depends on bundled blocklist and cache
 - AbuseIPDB live mode has rate limits
 
 ## Safety and Ethics
 
 Defensive tool only. Does not exploit or modify systems. Use only on alert data you are authorized to analyze.
-
-## Generative AI Usage
-
-See [docs/AI_USAGE.md](docs/AI_USAGE.md). AI helped with planning and early implementation; I reviewed and tested everything before submission.
-
-## Author
-
-Ola

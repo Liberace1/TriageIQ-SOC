@@ -10,7 +10,11 @@ build/
 venv/
 .venv/
 worklist.json
+worklist*.json
 *.log
+
+# local only (not submitted)
+docs/AI_USAGE.md
 
 # local / generated runtime artifacts
 triageiq.egg-info/

@@ -36,7 +36,7 @@
     "tactic": "Execution"
   },
   {
-    "keywords": ["brute force", "failed login", "auth failure"],
+    "keywords": ["brute force", "failed login", "auth failure", "sshd", "invalid user", "non-existent user"],
     "technique_id": "T1110",
     "technique_name": "Brute Force",
     "tactic": "Credential Access"

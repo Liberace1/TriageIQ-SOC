@@ -12,8 +12,14 @@ dependencies = [
     "rich>=13.0",
 ]
 
+[project.optional-dependencies]
+convert = [
+    "datasets>=2.0",
+]
+
 [project.scripts]
 triageiq = "triageiq.__main__:main"
+triageiq-convert = "triageiq.convert:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
