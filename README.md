@@ -68,61 +68,119 @@ TriageIQ-SOC/
 
 ## Requirements
 
-- **Python 3.11+** ([python.org](https://www.python.org/downloads/))
-- **pip** (bundled with Python; verify with `python -m pip --version`)
+| Requirement | Version / notes |
+|-------------|-----------------|
+| **Python** | **3.11 or newer** (minimum enforced in `pyproject.toml`: `>=3.11`) |
+| **pip** | Required for install; usually bundled with Python |
 
-## Setup
+Python 3.11, 3.12, and 3.13 are supported. Download from [python.org](https://www.python.org/downloads/) if needed.
 
-Clone the repo, create a virtual environment, then install TriageIQ:
+## Step-by-step guide
+
+### Step 1: Check Python and pip
+
+```bash
+python --version
+python -m pip --version
+```
+
+You need **Python 3.11 or newer**. If `python` is not found, try `python3` instead in the commands below.
+
+### Step 2: Clone the repository
 
 ```bash
 git clone https://github.com/Liberace1/TriageIQ-SOC.git
 cd TriageIQ-SOC
+```
+
+### Step 3: Create a virtual environment
+
+```bash
 python -m venv .venv
 ```
 
-Activate the virtual environment:
+### Step 4: Activate the virtual environment
+
+**Windows (Command Prompt or PowerShell):**
 
 ```bash
-# Windows
 .venv\Scripts\activate
+```
 
-# Linux / macOS
+**Linux / macOS:**
+
+```bash
 source .venv/bin/activate
 ```
 
-Install the package:
+The shell prompt should show `(.venv)` when the environment is active.
+
+### Step 5: Install TriageIQ
 
 ```bash
 python -m pip install -e .
 ```
 
-For online Wazuh download support:
+Optional (only if downloading Wazuh alerts from the internet):
 
 ```bash
 python -m pip install -e ".[convert]"
 ```
 
-## Converting alerts
+### Step 6: Run the offline demo (synthetic sample)
 
-**Local alert file** (auto-detects Wazuh vs flat TriageIQ format):
+```bash
+python -m triageiq
+```
+
+Or specify the sample file and output path explicitly:
+
+```bash
+python -m triageiq data/alerts.json --out worklist.json
+```
+
+Expected console summary:
+
+```
+50 alert(s) -> 45 case(s)
+```
+
+### Step 7: Run against the bundled Wazuh sample
+
+```bash
+python -m triageiq data/wazuh_alerts.json --out worklist.json
+```
+
+Expected console summary:
+
+```
+738 alert(s) -> 95 case(s)
+```
+
+### Step 8 (optional): Convert your own alert export
+
+If alerts are not already in TriageIQ flat JSON format, convert them first:
 
 ```bash
 triageiq-convert --input path/to/alerts.json --out data/converted.json
 ```
 
-**Explicit format:**
+Then triage the converted file:
 
 ```bash
-triageiq-convert -i wazuh_export.json -o data/converted.json --format wazuh
-triageiq-convert -i flat_alerts.json -o data/converted.json --format triageiq
+python -m triageiq data/converted.json --out worklist.json
 ```
 
-**Download Wazuh sample** from [kholil-lil/wazuh-alerts](https://huggingface.co/datasets/kholil-lil/wazuh-alerts):
+To download and convert the Wazuh sample from Hugging Face instead of using the bundled file:
 
 ```bash
 triageiq-convert --download --out data/wazuh_alerts.json
+python -m triageiq data/wazuh_alerts.json --out worklist.json
 ```
+
+## Command reference
+
+**Convert alerts (`triageiq-convert`):**
 
 | Flag | Default | Purpose |
 |------|---------|---------|
@@ -134,52 +192,34 @@ triageiq-convert --download --out data/wazuh_alerts.json
 
 \* `--input` or `--download` is required.
 
-Then run triage:
+Examples:
 
 ```bash
-python -m triageiq data/converted.json --out worklist.json
+triageiq-convert -i wazuh_export.json -o data/converted.json --format wazuh
+triageiq-convert -i flat_alerts.json -o data/converted.json --format triageiq
 ```
 
-## Usage
-
-**Offline demo:**
-
-```bash
-python -m triageiq
-python -m triageiq data/alerts.json --out worklist.json
-python -m triageiq data/wazuh_alerts.json --out worklist.json
-```
-
-**Optional flags:**
-
-```bash
-python -m triageiq data/alerts.json --dedup-window 30
-python -m triageiq data/alerts.json --live    # needs ABUSEIPDB_API_KEY
-```
+**Run triage (`python -m triageiq`):**
 
 | Flag | Default | Purpose |
 |------|---------|---------|
-| `--out` | `worklist.json` | Output file |
+| `alerts` | `data/alerts.json` | Input alert JSON file |
+| `--out` | `worklist.json` | Output worklist JSON |
 | `--dedup-window` | `60` | Dedup window (minutes) |
-| `--live` | off | Live AbuseIPDB API |
+| `--live` | off | Live AbuseIPDB API (needs `ABUSEIPDB_API_KEY`) |
+
+Examples:
+
+```bash
+python -m triageiq data/alerts.json --dedup-window 30
+python -m triageiq data/alerts.json --live
+```
 
 ## Expected Results
 
-Synthetic sample (`data/alerts.json`):
+After Step 6 (`data/alerts.json`), top cases include high-score malicious alerts (e.g. **ALT-005** Ransomware Beacon at **18.0**, ATT&CK **T1486**). Benign traffic sits near **0.0**.
 
-```
-50 alert(s) -> 45 case(s)
-```
-
-Wazuh sample (`data/wazuh_alerts.json`):
-
-```
-738 alert(s) -> 95 case(s)
-```
-
-Top synthetic cases include high-score malicious alerts (e.g. **ALT-005** Ransomware Beacon at **18.0**, ATT&CK **T1486**). Benign traffic sits near **0.0**.
-
-Output: ranked console table + `worklist.json` with scores, enrichments, ATT&CK data, and dedup counts.
+Output each run: ranked console table plus `worklist.json` with scores, enrichments, ATT&CK data, and dedup counts.
 
 ## Known Limitations
 
