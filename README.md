@@ -106,7 +106,9 @@ python -m venv .venv
 ```bash
 .venv\Scripts\activate
 ```
-
+```Git bash
+source .venv/Scripts/activate
+```
 **Linux / macOS:**
 
 ```bash
