@@ -369,6 +369,21 @@
       const refreshFilesButton = document.getElementById('refresh-files');
       const uploadInput = document.getElementById('upload-file');
       const uploadButton = document.getElementById('upload-button');
+      const tableHeader = document.querySelector('#cases thead tr');
+      let displayMode = 'worklist';
+
+      function escapeHtml(html) {
+        return String(html)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function setTableHeaders(headers) {
+        tableHeader.innerHTML = headers.map((header) => `<th>${escapeHtml(header)}</th>`).join('');
+      }
 
       async function fetchAlertSources() {
         try {
@@ -382,14 +397,38 @@
             option.textContent = file;
             alertsSelect.appendChild(option);
           });
-          activeFileLabel.textContent = body.active || 'unknown';
+          const selectedFile = body.selected || body.active || '';
+          activeFileLabel.textContent = selectedFile || 'unknown';
+          if (selectedFile && body.files.includes(selectedFile)) {
+            alertsSelect.value = selectedFile;
+          }
           if (body.files.length === 0) {
             alertsSelect.innerHTML = '<option value="">No JSON files found</option>';
+          }
+          displayMode = body.selected && body.selected !== body.active ? 'alerts' : 'worklist';
+          if (selectedFile && displayMode === 'alerts') {
+            await loadAlertSourcePreview(selectedFile);
           }
         } catch (error) {
           console.error('Unable to fetch alert sources', error);
           alertsSelect.innerHTML = '<option value="">Error loading files</option>';
           activeFileLabel.textContent = 'error';
+        }
+      }
+
+      async function loadAlertSourcePreview(filename) {
+        if (!filename) return;
+        try {
+          const resp = await fetch(`/alerts-files/${encodeURIComponent(filename)}`);
+          if (!resp.ok) return;
+          const body = await resp.json();
+          if (Array.isArray(body)) {
+            renderAlerts(body);
+          } else if (body && Array.isArray(body.alerts)) {
+            renderAlerts(body.alerts);
+          }
+        } catch (error) {
+          console.warn('Preview failed for selected file', filename, error);
         }
       }
 
@@ -404,7 +443,9 @@
           });
           const body = await resp.json();
           if (!resp.ok) throw new Error(body.detail || 'Failed to select file');
-          activeFileLabel.textContent = body.selected;
+          activeFileLabel.textContent = body.selected || body.active;
+          alertsSelect.value = body.selected || filename;
+          displayMode = 'alerts';
           await fetchAlertSources();
         } catch (error) {
           console.error('Select file failed', error);
@@ -443,7 +484,42 @@
         summaryDedup.textContent = payload.summary.dedup_ratio ?? '—';
       }
 
+      function renderAlerts(items) {
+        if (!Array.isArray(items)) return;
+        const keys = new Set();
+        items.forEach((item) => {
+          if (item && typeof item === 'object' && !Array.isArray(item)) {
+            Object.keys(item).forEach((key) => keys.add(key));
+          }
+        });
+
+        const preferred = ['id', 'severity', 'source', 'rule_name', 'rule', 'score', 'description', 'timestamp', 'alert_count'];
+        const ordered = [...preferred.filter((key) => keys.has(key)), ...[...keys].filter((key) => !preferred.includes(key))];
+        const headers = ordered.length ? ordered : ['Alert'];
+
+        setTableHeaders(headers.map((key) => key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())));
+        casesTable.innerHTML = '';
+
+        items.slice(0, 200).forEach((item) => {
+          const row = headers.map((key) => {
+            const value = item && typeof item === 'object' ? item[key] : item;
+            if (key === 'severity') {
+              return `<td><span class="${severityClass(value)}">${escapeHtml(value ?? '-')}</span></td>`;
+            }
+            if (value === undefined || value === null) {
+              return '<td>—</td>';
+            }
+            if (typeof value === 'object') {
+              return `<td>${escapeHtml(JSON.stringify(value))}</td>`;
+            }
+            return `<td>${escapeHtml(String(value))}</td>`;
+          }).join('');
+          casesTable.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
+        });
+      }
+
       function renderWorklist(payload) {
+        setTableHeaders(['Rank', 'Score', 'Cnt', 'ID', 'Severity', 'Rule', 'ATT&CK', 'Bad']);
         casesTable.innerHTML = '';
         const rows = payload.cases || [];
         rows.slice(0, 200).forEach((c, idx) => {
@@ -452,15 +528,42 @@
             <td>${idx + 1}</td>
             <td>${c.score ?? '-'}</td>
             <td>${c.alert_count ?? '-'}</td>
-            <td>${c.id ?? '-'}</td>
-            <td><span class="${severityClass(c.severity)}">${c.severity ?? 'unknown'}</span></td>
-            <td>${c.rule_name ?? '-'}</td>
-            <td>${c.attack?.technique_id ?? '-'}</td>
-            <td>${(c.indicators && c.indicators.length) ? c.indicators.length : (c.alert_count ? c.alert_count : '-')}</td>
+            <td>${escapeHtml(c.id ?? '-')}</td>
+            <td><span class="${severityClass(c.severity)}">${escapeHtml(c.severity ?? 'unknown')}</span></td>
+            <td>${escapeHtml(c.rule_name ?? '-')}</td>
+            <td>${escapeHtml(c.attack?.technique_id ?? '-')}</td>
+            <td>${escapeHtml((c.indicators && c.indicators.length) ? c.indicators.length : (c.alert_count ? c.alert_count : '-'))}</td>
           `;
           casesTable.appendChild(tr);
         });
       }
+
+      function renderPayload(data) {
+        if (!data || typeof data !== 'object') return;
+
+        if (displayMode === 'alerts') {
+          if (Array.isArray(data)) {
+            renderAlerts(data);
+            return;
+          }
+          if (Array.isArray(data.alerts)) {
+            renderAlerts(data.alerts);
+            return;
+          }
+          if (Array.isArray(data.items)) {
+            renderAlerts(data.items);
+            return;
+          }
+          return;
+        }
+
+        if (displayMode === 'worklist' && Array.isArray(data.cases) && data.summary) {
+          updateSummary(data);
+          renderWorklist(data);
+          return;
+        }
+      }
+
 
       function setStatus(text, state) {
         status.textContent = text;
@@ -500,9 +603,11 @@
             return;
           }
 
-          if (data && typeof data === 'object' && Array.isArray(data.cases)) {
-            updateSummary(data);
-            renderWorklist(data);
+          if (data && typeof data === 'object') {
+            if (displayMode === 'worklist' && Array.isArray(data.cases) && data.summary) {
+              updateSummary(data);
+            }
+            renderPayload(data);
           }
         };
       }
@@ -522,6 +627,11 @@
         }
       });
 
+      selectFileButton.addEventListener('click', activateSelectedFile);
+      refreshFilesButton.addEventListener('click', fetchAlertSources);
+      uploadButton.addEventListener('click', uploadNewFile);
+
+      fetchAlertSources();
       connectWebSocket();
     </script>
   </body>

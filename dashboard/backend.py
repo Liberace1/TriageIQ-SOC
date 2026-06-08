@@ -18,6 +18,7 @@ async def root():
 
 DATA_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data"))
 WORKLIST_PATH = os.path.normpath(os.path.join(DATA_DIR, "worklist.json"))
+ACTIVE_SOURCE_PATH = os.path.normpath(os.path.join(DATA_DIR, "active_source.txt"))
 
 def _resolve_active_alerts_path() -> str:
     raw_path = os.environ.get("TRIAGEIQ_ALERTS_PATH", "data/alerts.json")
@@ -26,6 +27,14 @@ def _resolve_active_alerts_path() -> str:
     return os.path.normpath(os.path.join(os.path.dirname(__file__), "..", raw_path))
 
 ACTIVE_ALERTS_PATH = _resolve_active_alerts_path()
+
+def _read_active_source_name() -> str | None:
+    try:
+        with open(ACTIVE_SOURCE_PATH, "r", encoding="utf-8") as f:
+            name = f.read().strip()
+        return name or None
+    except FileNotFoundError:
+        return None
 
 def _sanitize_filename(filename: str) -> str:
     if filename != os.path.basename(filename):
@@ -123,7 +132,11 @@ async def ingest(alert: dict):
 @app.get('/alerts-files')
 async def alerts_files():
     """List alert JSON sources available under the data directory."""
-    return {"files": list_alert_sources(), "active": os.path.basename(ACTIVE_ALERTS_PATH)}
+    return {
+        "files": list_alert_sources(),
+        "active": os.path.basename(ACTIVE_ALERTS_PATH),
+        "selected": _read_active_source_name() or os.path.basename(ACTIVE_ALERTS_PATH),
+    }
 
 @app.get('/alerts-files/{filename}')
 async def read_alert_file(filename: str):
@@ -157,6 +170,8 @@ async def select_alert_file(payload: dict):
     try:
         os.makedirs(os.path.dirname(ACTIVE_ALERTS_PATH), exist_ok=True)
         shutil.copyfile(source, ACTIVE_ALERTS_PATH)
+        with open(ACTIVE_SOURCE_PATH, "w", encoding="utf-8") as f:
+            f.write(safe_name)
         return {"ok": True, "active": os.path.basename(ACTIVE_ALERTS_PATH), "selected": safe_name}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Unable to activate file: {exc}")
