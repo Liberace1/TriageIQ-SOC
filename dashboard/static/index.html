@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TriageIQ Live Dashboard</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #eef2f7;
+        color: #111827;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 0;
+      }
+
+      .page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      header {
+        display: grid;
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .brand__mark {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #4f46e5 0%, #22c55e 100%);
+        display: grid;
+        place-items: center;
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.75rem, 2vw, 2.5rem);
+        line-height: 1.05;
+      }
+
+      .subtitle {
+        color: #475569;
+        margin: 0;
+        max-width: 760px;
+        line-height: 1.65;
+      }
+
+      .top-row {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+      }
+
+      .panel {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .status-connected { background: #dcfce7; color: #134e4a; }
+      .status-disconnected { background: #fee2e2; color: #b91c1c; }
+      .status-error { background: #fef3c7; color: #92400e; }
+      .status-reconnecting { background: #e0f2fe; color: #0369a1; }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .card {
+        background: #f8fafc;
+        border-radius: 18px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .card__label {
+        display: block;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #64748b;
+        margin-bottom: 8px;
+      }
+
+      .card__value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .controls input {
+        min-width: 260px;
+        flex: 1 1 260px;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-size: 1rem;
+        color: #0f172a;
+        background: #ffffff;
+      }
+
+      .file-controls {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .file-controls label {
+        display: block;
+        font-size: 0.9rem;
+        color: #475569;
+        margin-bottom: 6px;
+      }
+
+      .file-controls select,
+      .file-controls input[type="file"] {
+        width: 100%;
+        min-width: 240px;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: #ffffff;
+      }
+
+      .file-controls button {
+        border: none;
+        border-radius: 14px;
+        padding: 12px 18px;
+        background: #4f46e5;
+        color: white;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .file-controls button.secondary {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .active-file {
+        font-size: 0.95rem;
+        color: #475569;
+        margin-top: 10px;
+      }
+
+      .grid-2 {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: 1fr;
+        margin-top: 20px;
+      }
+
+      .table-wrapper {
+        overflow: hidden;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+
+      thead {
+        background: #f8fafc;
+      }
+
+      th, td {
+        padding: 14px 16px;
+        text-align: left;
+        color: #334155;
+      }
+
+      th {
+        font-size: 0.92rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      tbody tr {
+        background: #ffffff;
+      }
+
+      tbody tr:nth-child(odd) {
+        background: #f8fafc;
+      }
+
+      tbody tr:hover {
+        background: #e2e8f0;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .badge.high { background: #fee2e2; color: #b91c1c; }
+      .badge.medium { background: #fef3c7; color: #92400e; }
+      .badge.low { background: #dcfce7; color: #166534; }
+
+
+      @media (max-width: 980px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .top-row, .controls {
+          grid-template-columns: 1fr;
+        }
+
+        .brand {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <div class="brand__mark">IQ</div>
+          <div>
+            <h1>TriageIQ Live Dashboard</h1>
+            <p class="subtitle">Monitor ranked cases in real time with live WebSocket updates from the dashboard backend.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="top-row">
+            <div>
+              <div class="status-pill status-disconnected" id="status">Disconnected</div>
+            </div>
+            <div class="controls">
+              <label for="filter" style="font-weight: 700; color: #334155;">Search worklist</label>
+              <input id="filter" placeholder="Filter by rule, severity, or ID" />
+            </div>
+          </div>
+
+          <div class="summary-grid" id="summary-grid">
+            <div class="card">
+              <span class="card__label">Total cases</span>
+              <span class="card__value" id="summary-cases">—</span>
+            </div>
+            <div class="card">
+              <span class="card__label">Alerts ingested</span>
+              <span class="card__value" id="summary-alerts">—</span>
+            </div>
+            <div class="card">
+              <span class="card__label">Dedup ratio</span>
+              <span class="card__value" id="summary-dedup">—</span>
+            </div>
+          </div>
+
+          <div class="file-controls">
+            <div>
+              <label for="alerts-select">Available alert sources</label>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <select id="alerts-select"></select>
+                <button id="select-file" class="secondary">Activate</button>
+                <button id="refresh-files" class="secondary">Refresh</button>
+              </div>
+              <p class="active-file">Active file: <span id="active-file">loading...</span></p>
+            </div>
+            <div>
+              <label for="upload-file">Upload new alerts JSON</label>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <input id="upload-file" type="file" accept=".json" />
+                <button id="upload-button">Upload</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="grid-2">
+        <div class="panel table-wrapper">
+          <table id="cases">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Score</th>
+                <th>Cnt</th>
+                <th>ID</th>
+                <th>Severity</th>
+                <th>Rule</th>
+                <th>ATT&CK</th>
+                <th>Bad</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const casesTable = document.querySelector('#cases tbody');
+      const status = document.getElementById('status');
+      const filter = document.getElementById('filter');
+      const summaryCases = document.getElementById('summary-cases');
+      const summaryAlerts = document.getElementById('summary-alerts');
+      const summaryDedup = document.getElementById('summary-dedup');
+
+      function severityClass(s) {
+        if (!s) return 'badge low';
+        const lower = s.toLowerCase();
+        if (lower === 'critical' || lower === 'high') return 'badge high';
+        if (lower === 'medium') return 'badge medium';
+        return 'badge low';
+      }
+
+      const alertsSelect = document.getElementById('alerts-select');
+      const activeFileLabel = document.getElementById('active-file');
+      const selectFileButton = document.getElementById('select-file');
+      const refreshFilesButton = document.getElementById('refresh-files');
+      const uploadInput = document.getElementById('upload-file');
+      const uploadButton = document.getElementById('upload-button');
+
+      async function fetchAlertSources() {
+        try {
+          const resp = await fetch('/alerts-files');
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const body = await resp.json();
+          alertsSelect.innerHTML = '';
+          body.files.forEach((file) => {
+            const option = document.createElement('option');
+            option.value = file;
+            option.textContent = file;
+            alertsSelect.appendChild(option);
+          });
+          activeFileLabel.textContent = body.active || 'unknown';
+          if (body.files.length === 0) {
+            alertsSelect.innerHTML = '<option value="">No JSON files found</option>';
+          }
+        } catch (error) {
+          console.error('Unable to fetch alert sources', error);
+          alertsSelect.innerHTML = '<option value="">Error loading files</option>';
+          activeFileLabel.textContent = 'error';
+        }
+      }
+
+      async function activateSelectedFile() {
+        const filename = alertsSelect.value;
+        if (!filename) return;
+        try {
+          const resp = await fetch('/select-alert-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename }),
+          });
+          const body = await resp.json();
+          if (!resp.ok) throw new Error(body.detail || 'Failed to select file');
+          activeFileLabel.textContent = body.selected;
+          await fetchAlertSources();
+        } catch (error) {
+          console.error('Select file failed', error);
+          alert('Could not activate selected alerts file.');
+        }
+      }
+
+      async function uploadNewFile() {
+        const file = uploadInput.files?.[0];
+        if (!file) {
+          alert('Please choose a JSON file to upload.');
+          return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const resp = await fetch('/upload-alert-file', {
+            method: 'POST',
+            body: formData,
+          });
+          const body = await resp.json();
+          if (!resp.ok) throw new Error(body.detail || 'Upload failed');
+          alert(`Uploaded ${body.filename} successfully.`);
+          uploadInput.value = '';
+          await fetchAlertSources();
+        } catch (error) {
+          console.error('Upload failed', error);
+          alert('Unable to upload alerts file.');
+        }
+      }
+
+      function updateSummary(payload) {
+        if (!payload || typeof payload !== 'object' || !payload.summary) return;
+        summaryCases.textContent = payload.summary.cases_out ?? '—';
+        summaryAlerts.textContent = payload.summary.alerts_in ?? '—';
+        summaryDedup.textContent = payload.summary.dedup_ratio ?? '—';
+      }
+
+      function renderWorklist(payload) {
+        casesTable.innerHTML = '';
+        const rows = payload.cases || [];
+        rows.slice(0, 200).forEach((c, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td>${c.score ?? '-'}</td>
+            <td>${c.alert_count ?? '-'}</td>
+            <td>${c.id ?? '-'}</td>
+            <td><span class="${severityClass(c.severity)}">${c.severity ?? 'unknown'}</span></td>
+            <td>${c.rule_name ?? '-'}</td>
+            <td>${c.attack?.technique_id ?? '-'}</td>
+            <td>${(c.indicators && c.indicators.length) ? c.indicators.length : (c.alert_count ? c.alert_count : '-')}</td>
+          `;
+          casesTable.appendChild(tr);
+        });
+      }
+
+      function setStatus(text, state) {
+        status.textContent = text;
+        status.className = `status-pill ${state}`;
+      }
+
+      let ws;
+      let reconnectTimer;
+
+      function connectWebSocket() {
+        ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+
+        ws.onopen = () => {
+          setStatus('Connected', 'status-connected');
+          if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+          }
+        };
+
+        ws.onclose = () => {
+          setStatus('Disconnected', 'status-disconnected');
+          scheduleReconnect();
+        };
+
+        ws.onerror = () => {
+          setStatus('Error', 'status-error');
+          scheduleReconnect();
+        };
+
+        ws.onmessage = (ev) => {
+          let data;
+          try {
+            data = JSON.parse(ev.data);
+          } catch (e) {
+            console.warn('non-json message', ev.data);
+            return;
+          }
+
+          if (data && typeof data === 'object' && Array.isArray(data.cases)) {
+            updateSummary(data);
+            renderWorklist(data);
+          }
+        };
+      }
+
+      function scheduleReconnect() {
+        if (reconnectTimer) return;
+        reconnectTimer = setTimeout(() => {
+          setStatus('Reconnecting...', 'status-reconnecting');
+          connectWebSocket();
+        }, 2500);
+      }
+
+      filter.addEventListener('input', () => {
+        const q = filter.value.toLowerCase().trim();
+        for (const tr of casesTable.children) {
+          tr.style.display = q && !tr.textContent.toLowerCase().includes(q) ? 'none' : '';
+        }
+      });
+
+      connectWebSocket();
+    </script>
+  </body>
+</html>

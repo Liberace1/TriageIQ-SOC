@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import os
+import urllib.request
+import urllib.error
 
 from rich.console import Console
 from rich.table import Table
@@ -66,6 +69,18 @@ def write_worklist_json(
         },
     }
     Path(path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    # If TRIAGEIQ_DASHBOARD_URL is set, POST the JSON payload to that URL.
+    dashboard_url = os.environ.get("TRIAGEIQ_DASHBOARD_URL")
+    if dashboard_url:
+        try:
+            data = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(dashboard_url, data=data, headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                # consume response but don't require it
+                _ = resp.read()
+        except urllib.error.URLError as e:
+            print(f"Warning: failed to POST worklist to {dashboard_url}: {e}")
 
 
 def print_worklist_table(

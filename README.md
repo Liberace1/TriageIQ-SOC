@@ -75,7 +75,30 @@ TriageIQ-SOC/
 
 Python 3.11, 3.12, and 3.13 are supported. Download from [python.org](https://www.python.org/downloads/) if needed.
 
-## Step-by-step guide
+## Docker Quickstart (recommended)
+
+### Build and run with Docker
+
+```bash
+docker build -t triageiq-soc:latest .
+docker run --rm -p 8000:8000 triageiq-soc:latest
+```
+
+Open http://localhost:8000/ in a browser to access the live SOC dashboard and automatic `triageiq` processing.
+
+Environment variables:
+- `POLL_INTERVAL` — seconds between pipeline runs (default 15)
+- `TRIAGEIQ_ALERTS_PATH` — path inside container to alerts JSON (default `data/alerts.json`)
+- `TRIAGEIQ_WORKLIST_OUT` — output path (default `data/worklist.json`)
+- `TRIAGEIQ_DASHBOARD_URL` — ingest URL (default `http://localhost:8000/ingest`)
+
+Example:
+
+```bash
+docker run --rm -p 8000:8000 -e POLL_INTERVAL=30 triageiq-soc:latest
+```
+
+### Local install (alternative)
 
 ### Step 1: Check Python and pip
 
